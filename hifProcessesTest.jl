@@ -138,11 +138,11 @@ end
 """
 function systemSimplify(sys::ModelingToolkit.AbstractSystem, io = nothing; simplify = true, kwargs...)
   println("Calling local structural simplify")
-  #sys = MTK.ode_order_lowering(sys)
-  #sys = MTK.dae_index_lowering(sys)
+  sys = MTK.ode_order_lowering(sys)
+  sys = MTK.dae_index_lowering(sys)
+  sys = MTK.tearing(sys; simplify = simplify)
   #sys = MTK.tearing(sys; simplify = simplify)
-  #sys = MTK.tearing(sys; simplify = simplify)
-  return MTK.structural_simplify(sys)
+  return sys#MTK.structural_simplify(sys)
 end
 
 function generateSimplifiedModel(cModel, modelName)
@@ -1202,7 +1202,7 @@ end
 """
 function dynamicTestTheta1(;
                           modelName = "TestThetaMethod.NonlinearCircuit.Test.ThetaCircuit1Dynamic")
-  global file = "./Models/TestThetaMethod2.mo"
+  global file = "./Models/TestThetaMethod.mo"
   simulateDynamicTheta(;solver = :(FBDF()))
   sysInfo = experimentWithTeta(;modelName = modelName)
   global LATEST_SYS_INFO = sysInfo
@@ -1215,7 +1215,7 @@ end
 """
 function dynamicTestTheta2(;
                            modelName = "TestThetaMethod.NonlinearCircuit.Test.ThetaCircuit2Dynamic")
-  global file = "./Models/TestThetaMethod2.mo"
+  global file = "./Models/TestThetaMethod.mo"
   simulateDynamicTheta2(;solver = :(FBDF()))
   sysInfo = experimentWithTeta(;modelName = modelName)
   global LATEST_SYS_INFO = sysInfo
