@@ -117,7 +117,7 @@ To compare timing between the two variants, one using theta and one without.
 ```julia
 using BenchmarkTools
 include("sysWithProcess.jl")
-@benchmark simulateRK4()
+@benchmark simulateTsit5()
 include("sysWithoutProcess.jl")
 @benchmark simulate()
 ```
