@@ -6,18 +6,18 @@ These instructions, might require some familiarity with the Julia Language and i
 
 To test models generated using the new code generator, without generating them on your own machine locally see the examples folder
 
-## How to Install 
+## How to Install
 
-### Using the new operator for the entire compiler 
+### Using the new operator for the entire compiler
 Note that this need to be done in order to generate files using this new operator.
 However, since this is currently on an experimental branch it might be a bit cumbersome.
 
-- Install OpenModelica.jl by following the instructions here: 
+- Install OpenModelica.jl by following the instructions here:
   - https://github.com/JKRT/OM.jl
 - Switch to the follwowing branch: https://github.com/JKRT/OMBackend.jl/tree/when-eq-improvements
   -It should be noted that this branch is currently under development and things might change, please email me if there are any issues.
-  
-## Additional dependencies 
+
+## Additional dependencies
 - DifferentialEquations.jl
 - MetaGraphs.jl
 - ModelingToolkit.jl
@@ -27,7 +27,7 @@ However, since this is currently on an experimental branch it might be a bit cum
 - JuliaFormatter.jl
 - Graphs.jl
 + All assorted depencies described at https://github.com/JKRT/OM.jl
-  
+
 Once this is complete the file *hifProcessTest.jl* may be included.
 
 To test the various models decribed below under *models*
@@ -69,17 +69,17 @@ end
 ```
 
 It should be noted that running this code evaluates and generate code just-in-time in the currently Julia environment.
-Hence, if they are run twice they will overwrite eachother. 
+Hence, if they are run twice they will overwrite eachother.
 
 If you use the system this way the file name of the resulting models will be:
 ```
 lowered_sys<qualified-modelica-path>.mo
 ```
 
-The files should be included in your local directory. 
+The files should be included in your local directory.
 
 
-### Testing the model using the new operator 
+### Testing the model using the new operator
 Two example models have been generated, along with a Modelica program to simulate the same system using OpenModelica.
 They can be run and examined directely without running the steps above.
 
@@ -89,22 +89,37 @@ To run the OpenModelica reference file. Navigate to the folder and execute
 omc buildDynamic.mos
 ````
 
-The two generated models are called 
+The two generated models are called
 
 - sysWithProcess.jl
 - sysWithoutProcess.jl
 
-These can be executed using the following set of commands, each in its separate terminal since they overwrite each others symbols: 
+These can be executed using the following set of commands, each in its separate terminal since they overwrite each others symbols:
 
 ```
 > julia-1.9
 include("sysWithProcess.jl")
+using Plots
+sol = simulateRK4()
+plot(sol, idxs = (1))
 ```
 
 
 ```
 > julia-1.9
 include("sysWithoutProcess.jl")
+using Plots
+sol = simulate()
+plot(sol, idxs = (1))
+```
+
+To compare timing between the two variants, one using theta and one without.
+```julia
+using BenchmarkTools
+include("sysWithProcess.jl")
+@benchmark simulateRK4()
+include("sysWithoutProcess.jl")
+@benchmark simulate()
 ```
 
 To experiment with each of these models using different solvers see the following functions:
@@ -130,14 +145,14 @@ end
 ```
 
 Please note that the system that is not using theta, that is the system defined by sysWithoutProcess.jl explicit solvers such as RK-4 and Tsit5 will not work.
-However, the process that uses Θ will run successfully for both RK4 and for TSIT5. 
+However, the process that uses Θ will run successfully for both RK4 and for TSIT5.
 
 
-## The Modelica example 
-The example model in Modelica is available under `Models`. 
-The model used to produce the two examples is TestThetaMethod2.mo. 
+## The Modelica example
+The example model in Modelica is available under `Models`.
+The model used to produce the two examples is TestThetaMethod2.mo.
 
-The two relevant models are: 
+The two relevant models are:
 
 ```modelica
 model ThetaCircuit1Dynamic
@@ -154,9 +169,9 @@ TestThetaMethod.ThetaCapacitator Cnl(C (displayUnit = "F")= 1e-12) annotation(
 __OpenModelica_simulationFlags(lv = "LOG_DASSL,LOG_SIMULATION,LOG_STATS", s = "dassl", cpu = "()"),
 __OpenModelica_commandLineOptions = "--matchingAlgorithm=PFPlusExt --indexReductionMethod=dynamicStateSelection -d=initialization,NLSanalyticJacobian -d=infoXmlOperations ");
 end ThetaCircuit1Dynamic;
-``` 
+```
 
-and 
+and
 
 ```modelica
 model ThetaCircuit2Dynamic
@@ -227,4 +242,4 @@ We extract it by looking at the dependencies of the original system, extracting 
 ## Open questions based on Zimmers paper with artificial states
 How should the step-size control of the main simulation loop be controlled w.r.t to the
 convergence speed of the continuation solver?
-Currently this is left as future work 
+Currently this is left as future work
