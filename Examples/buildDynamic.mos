@@ -1,0 +1,10 @@
+setCommandLineOptions("-d=initialization");
+setCommandLineOptions("-d=backenddaeinfo");
+setCommandLineOptions("-d=discreteinfo");
+setCommandLineOptions("-d=stateselection");
+setCommandLineOptions("-d=execstat");
+setMatchingAlgorithm("PFPlusExt");
+setIndexReductionMethod("dynamicStateSelection");
+loadFile("../Models/TestThetaMethod2.mo"); getErrorString();
+buildModel(TestThetaMethod.NonlinearCircuit.Test.Circuit1Dynamic); getErrorString();
+simulate(TestThetaMethod.NonlinearCircuit.Test.Circuit1Dynamic)
