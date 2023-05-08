@@ -1,5 +1,10 @@
 # HIF_Processes_Modelica
-Initial proof of concept of handling Zimmer theta operator in Modelica
+Initial proof of concept of handling Zimmer theta operator in Modelica.
+
+There are two instructions provided here, the first is the long install option.
+These instructions, might require some familiarity with the Julia Language and its ecosystem.
+
+To test models generated using the new code generator, without generating them on your own machine locally see the examples folder
 
 ## How to Install 
 
@@ -11,6 +16,17 @@ However, since this is currently on an experimental branch it might be a bit cum
   - https://github.com/JKRT/OM.jl
 - Switch to the follwowing branch: https://github.com/JKRT/OMBackend.jl/tree/when-eq-improvements
   -It should be noted that this branch is currently under development and things might change, please email me if there are any issues.
+  
+## Additional dependencies 
+- DifferentialEquations.jl
+- MetaGraphs.jl
+- ModelingToolkit.jl
+- Plots.jl
+- CSV.jl
+- DataFrames.jl
+- JuliaFormatter.jl
+- Graphs.jl
++ All assorted depencies described at https://github.com/JKRT/OM.jl
   
 Once this is complete the file *hifProcessTest.jl* may be included.
 
