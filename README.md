@@ -73,10 +73,17 @@ Hence, if they are run twice they will overwrite eachother.
 
 If you use the system this way the file name of the resulting models will be:
 ```
-lowered_sys<qualified-modelica-path>.mo
+lowered_sys<qualified-modelica-path>.jl
 ```
 
 The files should be included in your local directory.
+One such file is included as a starter:
+
+```
+loweredSysTestThetaMethod__NonlinearCircuit__Test__ThetaCircuit2Dynamic.jl
+```
+
+It should be the same as the files under the Examples directory.
 
 
 ### Testing the model using the new operator
@@ -195,7 +202,6 @@ The first uses theta as a part of a component while the second use it in the par
 
 
 ## Translation notes
-
 The
 Modelica.Electrical.Analog.Semiconductors.exlin is not very well documented.
 The implementation of that function is:
@@ -211,6 +217,10 @@ algorithm
 end exlin;
 ```
 This function is inlined in the frontend.
+
+### The file ThetaExperiment.jl
+The file `ThetaExperiment.jl` is a temporary file showing MTK structure before
+generation of the more low level representation.
 
 ## Algorithm high level overview
 - Index reduction performed as before
@@ -243,3 +253,7 @@ We extract it by looking at the dependencies of the original system, extracting 
 How should the step-size control of the main simulation loop be controlled w.r.t to the
 convergence speed of the continuation solver?
 Currently this is left as future work
+
+
+## Ongoing work
+The previous bullet is currently ongoing work

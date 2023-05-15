@@ -26,9 +26,8 @@ function h(dy, y, aux, t)
   p[1] = t
   #= IFF process for Cp_v(t) =#
   thetaProcess1(aux)
-  NLF! = (F, u) -> k(F, u, aux)
   nlp = NonlinearProblem{true}(k, x, aux)
-  nlSol = solve(nlp)
+  nlSol= solve(nlp)
   x = nlSol.u
   #States#
   #STATE EQUATION Differential(t)(C1_v(t)) ~ 9999.99999999999C1_i(t)

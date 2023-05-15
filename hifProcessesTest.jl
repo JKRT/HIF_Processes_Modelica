@@ -27,8 +27,8 @@ function Static()
   solver = :(Rodas5())
 end
 
-function flattenDynamic()
-  res = OM.generateFlatModelica("TestThetaMethod.NonlinearCircuit.Test.Circuit1Dynamic", file; MSL = true)
+function flattenModelWriteToFile(modelName)
+  res = OM.generateFlatModelica(modelName, file; MSL = true)
   write("./FlatModels/Dynamic.mo", res)
 end
 
@@ -597,7 +597,7 @@ function testRun(sysInfo; outputFileName = "loweredSys.jl")
   =#
   #= Create theta function =#
   local buffer = IOBuffer()
-  println(buffer, "using NLsolve")
+  println(buffer, "using NonlinearSolve")
   println(buffer, "using DifferentialEquations")
   createThetaFunctions(buffer,
                        thetaEquationsIdxs,
@@ -838,13 +838,14 @@ function createHFunction(buffer, stateEquationStrs, thetaStates = String[])
     println(buffer, "#= IFF process for $(ts) =#")
     println(buffer, "thetaProcess$(i)(aux)")
   end
-  println(buffer, "NLF! = (F, u) -> k(F, u, aux)")
+  println(buffer, "nlp = NonlinearProblem{true}(k, x, aux)")
   #=
   First the nonlinear problem need to be solved.
   The result is then fed into the set of state equations.
   =# #θ
   #= Solve NLP =#
-  println(buffer, "x = (NLsolve.nlsolve(NLF!, x; autoscale = false, iterations = 1000, method=:newton)).zero")
+  println(buffer, "nlSol = solve(nlp)")
+  println(buffer, "x = nlSol.u")
   println(buffer,"#States#")
   for se in stateEquationStrs
     println(buffer, se)
@@ -1194,7 +1195,6 @@ function dynamicTest(;modelName = "TestThetaMethod.NonlinearCircuit.Test.Circuit
   sysInfo = experimentWithTeta(;modelName = modelName)
   global LATEST_SYS_INFO = sysInfo
   testRun(sysInfo; outputFileName = outputFileNameHelper(modelName))
-#  simulate()
 end
 
 """
@@ -1207,7 +1207,6 @@ function dynamicTestTheta1(;
   sysInfo = experimentWithTeta(;modelName = modelName)
   global LATEST_SYS_INFO = sysInfo
   testRun(sysInfo; outputFileName = outputFileNameHelper(modelName))
-#  simulate()
 end
 
 """
@@ -1217,10 +1216,10 @@ function dynamicTestTheta2(;
                            modelName = "TestThetaMethod.NonlinearCircuit.Test.ThetaCircuit2Dynamic")
   global file = "./Models/TestThetaMethod.mo"
   simulateDynamicTheta2(;solver = :(FBDF()))
+  flattenModelWriteToFile(modelName)
   sysInfo = experimentWithTeta(;modelName = modelName)
   global LATEST_SYS_INFO = sysInfo
   testRun(sysInfo; outputFileName = outputFileNameHelper(modelName))
-#  simulate()
 end
 
 function nonLinearTest()
@@ -1228,7 +1227,6 @@ function nonLinearTest()
   global file = "./Models/NonLinearScaleable.mo"
   sysInfo = experimentWithTeta(;modelName = modelName)
   testRun(sysInfo, outputFileName = outputFileNameHelper(modelName))
-#  simulate()
 end
 
 function dynamicTestThetaPaperExample(;
@@ -1238,5 +1236,11 @@ function dynamicTestThetaPaperExample(;
   sysInfo = experimentWithTeta(;modelName = modelName)
   global LATEST_SYS_INFO = sysInfo
   testRun(sysInfo, outputFileName = outputFileNameHelper(modelName))
-#  simulate()
 end
+
+#=
+To test:
+include the generated file
+<model_name>.jl
+Use one of the generated simulation methods.
+=#
